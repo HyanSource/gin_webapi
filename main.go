@@ -6,22 +6,33 @@ package main
 //https://github.com/skyhee/gin-doc-cn
 
 import (
+	"fmt"
+	"strconv"
+
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
+	setupServer().Run(":8080")
+}
+
+//設置初始化以及路由 寫成方法是為了可以做test
+func setupServer() *gin.Engine {
+
 	r := gin.Default() //有日誌 以及恢復中間件
 	// r := gin.New() //不帶日誌和中間件(request)
+
 	r.GET("/ping", PingGet)
 
 	{
-		r.GET("/h", HGet)
+		r.GET("/h/:name", HGet)
 		r.POST("/h", HPost)
+		r.DELETE("/h", HDelete)
 	}
 
 	r.POST("/Login", LoginPost)
 
-	r.Run(":8080")
+	return r
 }
 
 func PingGet(c *gin.Context) {
@@ -32,8 +43,10 @@ func PingGet(c *gin.Context) {
 
 func HGet(c *gin.Context) {
 
+	n := c.Param("name")
+
 	c.JSON(200, gin.H{
-		"n": c.Param("n"),
+		"name": n,
 	})
 }
 
@@ -49,6 +62,17 @@ func HPost(c *gin.Context) {
 		"id":    id,
 		"name":  name,
 		"money": money,
+	})
+}
+
+func HDelete(c *gin.Context) {
+	idstr := c.Param("id")
+	id, err := strconv.Atoi(idstr)
+	if err != nil {
+		fmt.Println("Delete err:", err)
+	}
+	c.JSON(200, gin.H{
+		"id": id,
 	})
 }
 
