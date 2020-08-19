@@ -15,15 +15,17 @@ type LoginData struct {
 func LoginPost(c *gin.Context) {
 	var json LoginData
 
-	if err := c.BindJSON(&json); err != nil {
+	if err := c.BindJSON(&json); err == nil {
 		fmt.Println(json)
 		if json.Username == "Hyan" && json.Password == "123" {
 			c.JSON(200, gin.H{
-				"status": "OK",
+				"username": json.Username,
+				"password": json.Password,
 			})
 		} else {
 			c.JSON(200, gin.H{
-				"status": "not OK",
+				"username": json.Username,
+				"password": json.Password,
 			})
 		}
 	}
